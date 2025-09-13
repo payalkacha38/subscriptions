@@ -62,5 +62,4 @@ Feel free to fork this repo, improve the code, and submit pull requests.
 
 📄 License
 
-This project is licensed under the MIT License – see the LICENSE
- file for details.
+This project is licensed under the MIT License 
