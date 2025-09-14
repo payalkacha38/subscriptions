@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DG Hub - Subscriptions</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<script>
+  // Highlight active link on scroll
+    const sections = document.querySelectorAll('section');
+
+    window.addEventListener('scroll', () => {
+      let scrollPos = window.scrollY + 100;
+      sections.forEach(section => {
+        if (scrollPos >= section.offsetTop && scrollPos < section.offsetTop + section.offsetHeight) {
+          links.forEach(link => link.classList.remove('active'));
+          const activeLink = document.querySelector(`.nav-links li a[href="#${section.id}"]`);
+          if (activeLink) activeLink.classList.add('active');
+        }
+      });
+    });
+</script>
+
+<style>
+  body {
+    background: url('images/img25.jpg') no-repeat center center/cover;
+    min-height: 100vh;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 100px;
+  }
+  body::before {
+    content:'';
+    position:fixed;
+    top:0; left:0; width:100%; height:100%;
+    background:inherit;
+    filter: blur(6px) brightness(0.8);
+    z-index:-1;
+  }
+
+  .navbar { display:flex; justify-content:space-between; align-items:center; background-color:rgba(53,104,117,0.9); padding:20px; position:fixed; width:100%; top:0; z-index:1000; backdrop-filter: blur(5px); }
+  .brand { display:flex; align-items:center; gap:10px; color:#fff; font-size:1.6rem; font-weight:700; }
+  .brand .logo { height:40px; width:40px; border-radius:50%; object-fit:cover; border:2px solid #fff; background-color:#ca55f5; }
+  .nav-links { list-style:none; display:flex; gap:20px; }
+  .nav-links li a { color:#fff; text-decoration:none; padding:6px 12px; border-radius:8px; transition:0.3s; font-weight:500; }
+  .nav-links li a:hover, .nav-links li a.active { background-color:#ca55f5; }
+  .hamburger { display:none; font-size:1.8rem; color:#fff; cursor:pointer; }
+
+  h1 { font-size:2.5rem; margin-bottom:10px; text-shadow: 1px 1px 8px rgba(0,0,0,0.6); }
+  p { font-size:1.2rem; margin-bottom:30px; text-shadow: 1px 1px 5px rgba(0,0,0,0.6); }
+
+  .table-wrapper {
+    width: 90%;
+    max-width: 900px;
+    padding: 20px;
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    background-color: rgba(0,0,0,0.3);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+    margin-bottom: 50px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: transparent;
+  }
+
+  th, td {
+    padding:15px 12px;
+    text-align:center;
+    color:white;
+    background-color: rgba(0,0,0,0.2);
+    border-radius:6px;
+    transition: background 0.3s, transform 0.3s;
+  }
+
+  th {
+    background: linear-gradient(45deg, #356875, #ca55f5);
+    font-weight:700;
+    text-transform: uppercase;
+    letter-spacing:1px;
+  }
+
+  tbody tr {
+    border-bottom:1px solid rgba(255,255,255,0.2);
+    cursor: pointer;
+    opacity:0;
+    transform: translateY(30px);
+    animation: slideUp 0.6s forwards;
+  }
+
+  tbody tr:hover td {
+    background-color: rgba(255,255,255,0.1);
+  }
+
+  @keyframes slideUp {
+    to { opacity:1; transform: translateY(0); }
+  }
+
+  @media (max-width:768px) {
+    .nav-links { position:absolute; top:60px; left:-100%; flex-direction:column; width:100%; background-color:rgba(44,62,80,0.95); transition:0.3s; }
+    .nav-links.show { left:0; }
+    .hamburger { display:block; }
+    .nav-links li { text-align:center; margin:15px 0; }
+    .table-wrapper { width:95%; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="brand">
+    <img src="images/logo.png" alt="Logo" class="logo">
+    SUBSCRIPTIONS
+  </div>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="activesub.html">Active Subscriptions</a></li>
+    <li><a href="ren_up.html" class="active">Upcoming Payments </a></li>
+    <li><a href="setting.html">Settings</a></li>
+  </ul>
+  <div class="hamburger" id="hamburger">&#9776;</div>
+</nav>
+
+
+
+<h1 id="upcoming-renewals">Upcoming Renewals</h1>
+<p>Subscriptions that will renew within the next 7 days:</p>
+<div class="table-wrapper">
+  <table id="upcoming-table">
+    <thead>
+      <tr>
+        <th>Subscription</th>
+        <th>Renewal Date</th>
+        <th>Amount</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+
+<h1 id="expired-section">Expired Subscriptions</h1>
+<p>Subscriptions that expired within the last 7 days:</p>
+<div class="table-wrapper">
+  <table id="expired-table">
+    <thead>
+      <tr>
+        <th>Subscription</th>
+        <th>Renewal Date</th>
+        <th>Amount</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+
+
+<script>
+const hamburger = document.getElementById('hamburger');
+const navLinks = document.getElementById('navLinks');
+hamburger.addEventListener('click', () => navLinks.classList.toggle('show'));
+
+// Generate dynamic dates in yyyy-mm-dd format
+function formatDate(date) {
+  let dd = date.getDate();
+  let mm = date.getMonth()+1;
+  const yyyy = date.getFullYear();
+  if(dd<10) dd='0'+dd;
+  if(mm<10) mm='0'+mm;
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+// Default subscriptions with dynamic dates
+if (!localStorage.getItem('subscriptions')) {
+  const today = new Date();
+  const defaultSubs = [
+    {name:"Expired1", renewal: formatDate(new Date(today.getFullYear(), today.getMonth(), today.getDate()-2)), amount:"$10"},
+    {name:"Expired2", renewal: formatDate(new Date(today.getFullYear(), today.getMonth(), today.getDate()-5)), amount:"$12"},
+    {name:"Upcoming1", renewal: formatDate(new Date(today.getFullYear(), today.getMonth(), today.getDate()+2)), amount:"$15"},
+    {name:"Upcoming2", renewal: formatDate(new Date(today.getFullYear(), today.getMonth(), today.getDate()+5)), amount:"$20"},
+    {name:"Future", renewal: formatDate(new Date(today.getFullYear(), today.getMonth(), today.getDate()+10)), amount:"$25"}
+  ];
+  localStorage.setItem('subscriptions', JSON.stringify(defaultSubs));
+}
+
+const subscriptions = JSON.parse(localStorage.getItem('subscriptions') || '[]');
+
+function parseDate(dateStr) {
+  if(!dateStr) return null;
+  const [yyyy, mm, dd] = dateStr.split('-').map(Number);
+  return new Date(yyyy, mm-1, dd);
+}
+
+// Expired last 7 days
+function showExpiredLast7Days() {
+  const tbody = document.querySelector("#expired-table tbody");
+  tbody.innerHTML = "";
+
+  const today = new Date(); today.setHours(23,59,59,999);
+  const pastDate = new Date(); pastDate.setDate(today.getDate()-7); pastDate.setHours(0,0,0,0);
+
+  const expiredSubs = subscriptions.filter(sub => {
+    const date = parseDate(sub.renewal);
+    return date && date <= today && date >= pastDate;
+  }).sort((a,b) => parseDate(b.renewal) - parseDate(a.renewal));
+
+  if(!expiredSubs.length){
+    tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;">No subscriptions expired in the last 7 days.</td></tr>`;
+    return;
+  }
+
+  expiredSubs.forEach(sub => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${sub.name}</td><td>${sub.renewal}</td><td>${sub.amount}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+// Upcoming next 7 days
+function showUpcomingNext7Days() {
+  const tbody = document.querySelector("#upcoming-table tbody");
+  tbody.innerHTML = "";
+
+  const today = new Date(); today.setHours(0,0,0,0);
+  const upcomingDate = new Date(); upcomingDate.setDate(today.getDate()+7); upcomingDate.setHours(23,59,59,999);
+
+  const upcomingSubs = subscriptions.filter(sub => {
+    const date = parseDate(sub.renewal);
+    return date && date > today && date <= upcomingDate;
+  }).sort((a,b) => parseDate(a.renewal) - parseDate(b.renewal));
+
+  if(!upcomingSubs.length){
+    tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;">No subscriptions renewing in the next 7 days.</td></tr>`;
+    return;
+  }
+
+  upcomingSubs.forEach(sub => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${sub.name}</td><td>${sub.renewal}</td><td>${sub.amount}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+// Render tables
+showExpiredLast7Days();
+showUpcomingNext7Days();
+</script>
+
+</body>
+</html>
